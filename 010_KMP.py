@@ -14,6 +14,48 @@
 # Space Complexity: O(k) where k is the size of search string
 # 
 
+def _LPSArray(word):
+    """
+    Build the longest prefix suffix table.
+    `delta += i+1` makes it O(n) time complexity.
+
+    e.g. word = 'abababcabc'
+        1) delta = 1
+            a b a b a b c a b c
+              a b a b a b c a b c
+              X
+           The first character doesn't match, word[i+delta] != word[i] when i == 0
+           Increment `delta` by 1
+
+        2) delta = 2
+            a b a b a b c a b c
+                a b a b a b c a b c
+                m m m m X
+           The first 4 characters match, word[i+delta] == word[i] holds for i belongs to {0,1,2,3}
+           Then update lps to [0, 0, 1, 2, 3, 4, ...]
+           When these 4 characters is matched, no need to recheck it, increment `delta` by (i+1) where i == 3
+
+        3) delta = 6, there is no match, increment `delta` by 1
+
+        4) delta = 7
+            a b a b a b c a b c
+                          a b a b a b c a b c
+                          m m X
+           The first 2 characteres match, word[i+delta] == word[i] holds for i belongs to {0,1}
+           Then update lps to [0, 0, 1, 2, 3, 4, 0, 1, 2, 0]            
+    """
+    lps = [0 for ch in word]
+    delta = 1
+    while delta < len(word):
+        i = 0
+        while i + delta < len(word) and word[i+delta] == word[i]:
+            lps[delta+i] = i+1
+            i += 1
+        delta += i+1
+    return lps
+
+
+
 def kmp_strstr(haystack, needle):
     """
     Calculate the prefix suffix table first, which stores the information
@@ -59,6 +101,14 @@ def kmp_strstr(haystack, needle):
                 i += 1
             delta += i+1
         return lps
+
+    # handle special cases
+    if haystack == needle:
+        return [0]
+    elif not needle:
+        return [0]
+    elif not haystack:
+        return []
     # init lps table
     lps = computeLPSArray(needle)
     ans = []
@@ -71,53 +121,13 @@ def kmp_strstr(haystack, needle):
             i_needle += 1
             if i_needle == len(needle):
                 ans.append(i_haystack - i_needle)
-                i_needle = 0
+                i_needle = lps[i_needle-1]
         elif i_needle != 0:
             i_needle = lps[i_needle-1]
         else:
             i_haystack += 1
 
     return ans
-
-def _LPSArray(word):
-    """
-    Build the longest prefix suffix table.
-    `delta += i+1` makes it O(n) time complexity.
-
-    e.g. word = 'abababcabc'
-        1) delta = 1
-            a b a b a b c a b c
-              a b a b a b c a b c
-              X
-           The first character doesn't match, word[i+delta] != word[i] when i == 0
-           Increment `delta` by 1
-
-        2) delta = 2
-            a b a b a b c a b c
-                a b a b a b c a b c
-                m m m m X
-           The first 4 characters match, word[i+delta] == word[i] holds for i belongs to {0,1,2,3}
-           Then update lps to [0, 0, 1, 2, 3, 4, ...]
-           When these 4 characters is matched, no need to recheck it, increment `delta` by (i+1) where i == 3
-
-        3) delta = 6, there is no match, increment `delta` by 1
-
-        4) delta = 7
-            a b a b a b c a b c
-                          a b a b a b c a b c
-                          m m X
-           The first 2 characteres match, word[i+delta] == word[i] holds for i belongs to {0,1}
-           Then update lps to [0, 0, 1, 2, 3, 4, 0, 1, 2, 0]            
-    """
-    lps = [0 for ch in word]
-    delta = 1
-    while delta < len(word):
-        i = 0
-        while i + delta < len(word) and word[i+delta] == word[i]:
-            lps[delta+i] = i+1
-            i += 1
-        delta += i+1
-    return lps
 
 
 def normal_strstr(haystack, needle):
@@ -126,6 +136,14 @@ def normal_strstr(haystack, needle):
     This algorithm is same as `haystack[i:i_haystack+len(needle)] == needle` solution
     The worst-case time Complexity is O(n*k)
     """
+    # handle special cases
+    if haystack == needle:
+        return [0]
+    elif not needle:
+        return [0]
+    elif not haystack:
+        return []
+
     i_haystack = 0
     ans = []
     while i_haystack + len(needle) - 1 < len(haystack):
@@ -142,15 +160,17 @@ def normal_strstr(haystack, needle):
 
 if __name__ == '__main__':
     test_strings = ["aaaaaaaaaaacccccccdddddc", "qwertyuiopasdfghjklxcvbnm", "abababcabababcabcdeab"
-                    "jjjjjkkkkkjjjjjkkkkkkjkjjjkkl", "jkljkljkljkljkljkl", "ABABDABACDABABCABAB"]
+                    "jjjjjkkkkkjjjjjkkkkkkjkjjjkkl", "jkljkljkljkljkljkl", "ABABDABACDABABCABAB",
+                    "", "", "emptytest",
+                    "aaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaaaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaaba"]
     words = ["ccccccc", "hjkl", "abababcabcd"
-             "jjjjjjkkk", "ljk", "ABABCABAB"]
+             "jjjjjjkkk", "ljk", "ABABCABAB",
+             "", "emptytest", "",
+             "aaaaaaa"]
     for i, text in enumerate(test_strings):
         assert kmp_strstr(text, words[i]) == normal_strstr(text, words[i])
-    # print kmp_strstr("ABABDABACDABABCABAB", "ABABCABAB")
-    # print normal_strstr("ABABDABACDABABCABAB", "ABABCABAB")
-    # print kmp_strstr("abababcabababcabcdeab", "abababcabcd")
-    # print normal_strstr("abababcabababcabcdeab", "abababcabcd")
     # print _LPSArray("abababcabcd")
     # print _LPSArray("aaaacaa")
     # print _LPSArray("aaaaaaaaaa")
+    print kmp_strstr("aaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaaaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaaa","aaaaaaa")
+    print normal_strstr("aaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaaaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaaa","aaaaaaa")
