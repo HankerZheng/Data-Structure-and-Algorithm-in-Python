@@ -121,12 +121,11 @@ class FenwickTree(object):
 
 
 def fenwickTree_test():
-    mytree = FenwickTree.create_from_list(range(1,11))
-    for i in xrange(10):
-        for j in xrange(i, 10):
-            assert mytree.query_sum(i, j) == ((i+j+2) * (j-i+1))/2
-
-
+    fenwickTree = FenwickTree.create_from_list(range(1,1001))
+    for i in xrange(1000):
+        assert fenwickTree.get_index(i) == i+1
+        for j in xrange(i, 1000):
+            assert fenwickTree.query_sum(i, j) == ((i+j+2) * (j-i+1))/2
 
 if __name__ == '__main__':
     fenwickTree_test()
