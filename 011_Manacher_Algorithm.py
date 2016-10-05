@@ -173,8 +173,8 @@ def longest_palindrome_substring_test():
     for i in xrange(100):
         test_case = [random.choice(char_set) for _ in xrange(300)]
         test = "".join(test_case)
-        print manacher(test)
-        assert dp_LongestPalindromeSubstring(test) == normal_LongestPalindromeSubstring(test)
+        # print manacher(test)
+        assert manacher(test) == dp_LongestPalindromeSubstring(test)
         assert manacher(test) == normal_LongestPalindromeSubstring(test)
 
 
