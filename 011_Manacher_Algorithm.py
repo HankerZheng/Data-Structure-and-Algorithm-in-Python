@@ -1,5 +1,10 @@
 # Manacher's Algorithm - Linear Time Longest Palindromic Substring Algorithm
 # 
+# For string "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" (length = 65)
+# there will only be 129 comparasions in Manacher algorithm,
+# while in `normal_LongestPalindromeSubstring()` function, there will be 2144 comparasions!
+# Even more time and space for the DP solution!!
+# 
 # Reference:
 #   http://www.geeksforgeeks.org/manachers-algorithm-linear-time-longest-palindromic-substring-part-1/
 #   https://en.wikipedia.org/wiki/Longest_palindromic_substring
@@ -24,11 +29,13 @@ def manacher(string):
     Time Complexity: O(n)
     Space Complexity: O(n)
 
-    Example for "abaca":
-                #  a  #  b  #  a  #  c  #  a  #
-    physical    -  0  -  1  -  2  -  3  -  4  -
-    virtual     0  1  2  3  4  5  6  7  8  9  10
-    LPS table   1  2  1  4  1  2  1  4  1  2  1
+    Example for "abaaba":
+                    #  a  #  b  #  a  #  a  #  b  #  a  #
+    physical        -  0  -  1  -  2  -  3  -  4  -  5
+    virtual         0  1  2  3  4  5  6  7  8  9  10 11 12
+    LPS table       1  2  1  4  1  2  7  2  1  4  1  2  1
+    right_border    0  2  -  6  -  -  12 -  -  -  -  -  -   , `-` means not updated
+    center_index    0  1  -  3  -  -  6  -  -  -  -  -  -   , `-` means not updated
 
     Therefore, virtual_index = physical_index * 2 + 1
               physical_index = (virtual_index - 1)/2 if virtual_index&1 else -1
@@ -57,17 +64,26 @@ def manacher(string):
     # main loop to calculate the lps table
     max_length = 0
     right_border = 0
-    virtual_index = 0
+    center_index = 0
+    # compare_count = 0
     for i, _ in enumerate(lps):
+        # This IF-STATEMENT is the key of MANACHER'S Algorithm
+        # If this character is within the range of a longer palindrome,
+        # then update lps with the symmetric value
         if right_border > i:
-            lps[i] = min(lps[2 * virtual_index - i], right_border - i)
+            lps[i] = min(lps[2 * center_index - i], right_border - i + 1)
+        # expand this palindrome
         while 0 <= i - lps[i] and i + lps[i] < len(lps) and get_actual_char(i + lps[i]) == get_actual_char(i - lps[i]):
+            # compare_count += 1
             lps[i] += 1
         max_length = max(max_length, lps[i])
-        if lps[i] + 1 > right_border:
-            right_border = lps[i] + i
-            virtual_index = i
+        # update right_border and center if current right_border is larger than the previous one
+        if lps[i] + i - 1 > right_border:
+            right_border = lps[i] + i - 1
+            center_index = i
     # At here, the length of longest palindrome substring is `max_length - 1`
+    # print lps
+    # print compare_count
     ans = []
     for i, num in enumerate(lps):
         if num == max_length:
@@ -134,6 +150,7 @@ def normal_LongestPalindromeSubstring(string):
     Time Complexity:  O(n^2)
     Space Complexity: O(1), if we wants store the result string, then it will be O(n)
     """
+    # compare_count = 0
     max_length = 1
     ans = []
     for i in xrange(1, len(string)):
@@ -142,6 +159,7 @@ def normal_LongestPalindromeSubstring(string):
         low = i - 1
         high = i
         while 0 <= low and high < len(string) and string[low] == string[high]:
+            # compare_count += 1
             if high - low + 1 > max_length:
                 max_length = high - low + 1
                 ans = []
@@ -155,6 +173,7 @@ def normal_LongestPalindromeSubstring(string):
         low = i
         high = i
         while 0 <= low and high < len(string) and string[low] == string[high]:
+            # compare_count += 1
             if high - low + 1 > max_length:
                 max_length = high - low + 1
                 ans = []
@@ -163,6 +182,7 @@ def normal_LongestPalindromeSubstring(string):
                 ans.append((low, high+1))
             low -= 1
             high += 1
+    # print compare_count
     if max_length == 1:
         return set(string.split())
     return set(map(lambda x: string[x[0]:x[1]], ans))
@@ -192,6 +212,8 @@ if __name__ == '__main__':
     #     assert dp_LongestPalindromeSubstring(test) == normal_LongestPalindromeSubstring(test)
     #     # print manacher(test), normal_LongestPalindromeSubstring(test)
     #     assert manacher(test) == normal_LongestPalindromeSubstring(test)
-    # print manacher("abaca")
+    # print manacher("abaaba")
     # print manacher("")
     longest_palindrome_substring_test()
+    # manacher("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+    # normal_LongestPalindromeSubstring("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
