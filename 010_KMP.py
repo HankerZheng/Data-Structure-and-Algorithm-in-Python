@@ -50,9 +50,12 @@ def _LPSArray(word):
     while delta < len(word):
         i = 0
         while i + delta < len(word) and word[i+delta] == word[i]:
-            lps[delta+i] = i+1
+            lps[delta+i] = i + 1
             i += 1
-        delta += i+1
+        if i == 0:
+            delta += 1
+        else:
+            delta = delta + i
     return lps
 
 
@@ -100,7 +103,10 @@ def kmp_strstr(haystack, needle):
             while i + delta < len(word) and word[i+delta] == word[i]:
                 lps[delta+i] = i+1
                 i += 1
-            delta += i+1
+            if i == 0:
+                delta += 1
+            else:
+                delta = delta + i
         return lps
 
     # handle special cases
@@ -120,6 +126,7 @@ def kmp_strstr(haystack, needle):
         if haystack[i_haystack] == needle[i_needle]:
             i_haystack += 1
             i_needle += 1
+            # print i_needle, i_haystack
             if i_needle == len(needle):
                 ans.append(i_haystack - i_needle)
                 i_needle = lps[i_needle-1]
@@ -193,3 +200,5 @@ if __name__ == '__main__':
     # print kmp_strstr("aaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaaaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaaa","aaaaaaa")
     # print normal_strstr("aaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaaaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaaa","aaaaaaa")
     strstr_test()
+    # print _LPSArray("ababcaabc")
+    # print kmp_strstr("ababcaababcaabc","ababcaabc")

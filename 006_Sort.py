@@ -285,11 +285,11 @@ if __name__=="__main__":
         my_sort(test)
         order_test(test, isprint=False)
 
-    # Time Statistics
+    # # Time Statistics
     # sort_algorithms = [shell_sort, heap_sort, merge_sort, quick_sort]
     # algorithm_compare([insertion_sort], length=100000, times=1, isprint=True)
 
-    # Pre-order test
+    # # Pre-order test
     # preorder = range(100000)
     # for i in xrange(10):
     #     my_sort(preorder)

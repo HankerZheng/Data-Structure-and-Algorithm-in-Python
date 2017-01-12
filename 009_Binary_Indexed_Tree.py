@@ -12,7 +12,7 @@
 # Trick this data sturcture use:
 #   1. n & (n-1) to eliminate the last '1' in the integer
 #      parent node is array[i&(i-1)]
-#   2. the value of each node is the sum of all its children
+#   2. the value of each node is the sum of all its ##
 #      node i store the sum from (i&(i-1)) to i-1 inclusively.
 # 
 # Methods supported:
@@ -128,5 +128,7 @@ def fenwickTree_test():
             assert fenwickTree.query_sum(i, j) == ((i+j+2) * (j-i+1))/2
 
 if __name__ == '__main__':
-    fenwickTree_test()
+    # fenwickTree_test()
+    a = FenwickTree.create_from_list(range(1, 16))
+    print a._data
 
