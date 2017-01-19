@@ -118,10 +118,18 @@ class HashHeap(object):
         if thisNode.cnt > 1:
             thisNode.cnt -= 1
             self._cap -= 1
+        elif idx == self._maxIdx:
+            # the node itself is the last node
+            self._removeLastNode()
         else:
             self._swap(idx, self._maxIdx)
             self._removeLastNode()
-            self._siftDown(idx)
+            pidx = (idx - 1) / 2
+            # check to see we should sift up or sift down
+            if pidx >= 0 and self._data[pidx] > self._data[idx]:
+                self._siftUp(idx)
+            else:
+                self._siftDown(idx)
         return retVal
 
     @property
