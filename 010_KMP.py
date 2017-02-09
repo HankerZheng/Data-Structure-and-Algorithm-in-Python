@@ -45,19 +45,19 @@ def _LPSArray(word):
            The first 2 characteres match, word[i+delta] == word[i] holds for i belongs to {0,1}
            Then update lps to [0, 0, 1, 2, 3, 4, 0, 1, 2, 0]            
     """
-    lps = [0 for ch in word]
+    lps = [0] * len(word)
+    wordIdx = 0
     delta = 1
     while delta < len(word):
-        i = 0
-        while i + delta < len(word) and word[i+delta] == word[i]:
-            lps[delta+i] = i + 1
-            i += 1
-        if i == 0:
+        while delta < len(word) and word[delta] == word[wordIdx]:
+            lps[delta] = wordIdx + 1
+            wordIdx += 1
             delta += 1
+        if wordIdx != 0:
+            wordIdx = lps[wordIdx-1]
         else:
-            delta = delta + i
+            delta += 1
     return lps
-
 
 
 def kmp_strstr(haystack, needle):
@@ -96,17 +96,18 @@ def kmp_strstr(haystack, needle):
     """
     def computeLPSArray(word):
         # The explaination of this function is in _LPSArray()
-        lps = [0 for ch in word]
+        lps = [0] * len(word)
+        wordIdx = 0
         delta = 1
         while delta < len(word):
-            i = 0
-            while i + delta < len(word) and word[i+delta] == word[i]:
-                lps[delta+i] = i+1
-                i += 1
-            if i == 0:
+            while delta < len(word) and word[delta] == word[wordIdx]:
+                lps[delta] = wordIdx + 1
+                wordIdx += 1
                 delta += 1
+            if wordIdx != 0:
+                wordIdx = lps[wordIdx-1]
             else:
-                delta = delta + i
+                delta += 1
         return lps
 
     # handle special cases
@@ -184,19 +185,19 @@ The difference is that KMP makes use of previous match information that the stra
 
 
 if __name__ == '__main__':
-    # test_strings = ["aaaaaaaaaaacccccccdddddc", "qwertyuiopasdfghjklxcvbnm", "abababcabababcabcdeab"
-    #                 "jjjjjkkkkkjjjjjkkkkkkjkjjjkkl", "jkljkljkljkljkljkl", "ABABDABACDABABCABAB",
-    #                 "", "", "emptytest",
-    #                 "aaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaaaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaaba"]
-    # words = ["ccccccc", "hjkl", "abababcabcd"
-    #          "jjjjjjkkk", "ljk", "ABABCABAB",
-    #          "", "emptytest", "",
-    #          "aaaaaaa"]
-    # for i, text in enumerate(test_strings):
-    #     assert kmp_strstr(text, words[i]) == normal_strstr(text, words[i])
-    # # print _LPSArray("abababcabcd")
-    # # print _LPSArray("aaaacaa")
-    # # print _LPSArray("aaaaaaaaaa")
+    test_strings = ["aaaaaaaaaaacccccccdddddc", "qwertyuiopasdfghjklxcvbnm", "abababcabababcabcdeab"
+                    "jjjjjkkkkkjjjjjkkkkkkjkjjjkkl", "jkljkljkljkljkljkl", "ABABDABACDABABCABAB",
+                    "", "", "emptytest",
+                    "aaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaaaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaaba"]
+    words = ["ccccccc", "hjkl", "abababcabcd"
+             "jjjjjjkkk", "ljk", "ABABCABAB",
+             "", "emptytest", "",
+             "aaaaaaa"]
+    for i, text in enumerate(test_strings):
+        assert kmp_strstr(text, words[i]) == normal_strstr(text, words[i])
+    # print _LPSArray("abababcabcd")
+    # print _LPSArray("aaaacaa")
+    # print _LPSArray("aaaaaaaaaa")
     # print kmp_strstr("aaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaaaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaaa","aaaaaaa")
     # print normal_strstr("aaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaaaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaabaaaaaaa","aaaaaaa")
     strstr_test()
