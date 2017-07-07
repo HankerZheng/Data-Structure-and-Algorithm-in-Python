@@ -47,7 +47,7 @@ def dijkstra(graph, src):
             distance[neighbor] = min(distance[neighbor], distance[thisNode] + cost)
             if neighbor not in visited:
                 heapq.heappush(heap, (distance[neighbor], neighbor))
-                visited.add(neighbor)
+        visited.add(thisNode)
     return distance
 
 if __name__ == '__main__':
