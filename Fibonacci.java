@@ -1,4 +1,25 @@
+// For nature number n, we have
+//      Fib(2n)   = Fib(n+1)^2 - Fib(n-1)^2
+//      Fib(2n+1) = Fib(n)  ^2 + Fib(n+1)^2
+
+
 public class Fibonacci {
+
+    public static void main(String[] args) {
+        Fibonacci f = new Fibonacci();
+        int[] res = new int[90];
+        for (int i = 0; i < res.length; i++) {
+            res[i] = f.solution(i);
+        }
+        for (int i = 1; i < 50; i += 2) {
+            int calculate = res[i/2] * res[i/2] + res[i/2+1] * res[i/2+1];
+            if (calculate != res[i]) {
+                System.out.format("%d SQX's Ans: %d; Ans: %d\n",i, calculate, res[i]);
+            }
+        }
+    }
+
+
     public int solution(int n) {
         TwoTwo ans = new TwoTwo(1,0,0,1);
         TwoTwo tmp = new TwoTwo(1,1,1,0);
@@ -9,14 +30,6 @@ public class Fibonacci {
             left = left >> 1;
         }
         return (int) ans.c;
-    }
-
-    public static void main(String[] args) {
-        Fibonacci f = new Fibonacci();
-        for (int i = 0; i < 500; i ++) {
-            int ans = f.solution(i);
-            System.out.println(ans);
-        }
     }
 }
 
