@@ -1,4 +1,4 @@
-# Algorithm Implemented in Python
+# Data Structure and Algorithm Implemented in Python
 
 2016-10-05
 ===
